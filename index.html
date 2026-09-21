@@ -722,6 +722,22 @@
     transform: scale(1);
   }
 
+  .cancion-nota {
+    font-style: italic;
+    color: #8b6914;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    max-width: 480px;
+    margin: 10px auto 25px;
+    opacity: 0;
+    animation: fadeInNota 1.5s ease-out 1.4s forwards;
+  }
+
+  @keyframes fadeInNota {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   @media (max-width: 600px) {
     h1 { font-size: 1.9rem; }
     h2 { font-size: 1.4rem; }
@@ -911,6 +927,10 @@
       <div class="final-heart">💛</div>
       <h1 class="te-amo" id="teAmoTexto">TE AMO CON TODO<br>MI CORAZÓN</h1>
       <p class="from">Gracias por ser mi flor amarilla favorita ✨</p>
+      <p class="cancion-nota">
+        🎶 Quédate un ratito más, cierra los ojos y escucha toda esta canción
+        conmigo... cada nota es un "te amo" que no me alcanzó a decirte. 💛
+      </p>
       <button class="secondary" onclick="irA('screen-intro')">Volver al inicio</button>
     </div>
   </section>
