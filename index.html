@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Flores Amarillas para Ti 🌼</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: linear-gradient(180deg, #fff8dc 0%, #ffe680 50%, #ffcc00 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  /* Cielo con resplandor */
+  body::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 30%, rgba(255,255,200,0.8) 0%, transparent 60%);
+    animation: glow 6s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes glow {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+  }
+
+  /* Pétalos cayendo */
+  .petal {
+    position: fixed;
+    top: -50px;
+    font-size: 24px;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes fall {
+    0%   { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Contenido */
+  .card {
+    position: relative;
+    z-index: 10;
+    max-width: 700px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 30px;
+    padding: 50px 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(200, 150, 0, 0.35);
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    animation: appear 1.5s ease-out;
+  }
+
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(40px) scale(0.9); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Ramo de flores animado */
+  .bouquet {
+    font-size: 80px;
+    margin-bottom: 10px;
+    display: inline-block;
+    animation: sway 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(255, 180, 0, 0.5));
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50%      { transform: rotate(5deg); }
+  }
+
+  h1 {
+    font-size: 2.6rem;
+    color: #b8860b;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9);
+    letter-spacing: 1px;
+  }
+
+  .message {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: #5c4a1a;
+    margin-bottom: 30px;
+  }
+
+  .message p { margin-bottom: 15px; }
+
+  .from {
+    font-style: italic;
+    color: #8b6914;
+    font-size: 1.2rem;
+    margin-top: 20px;
+  }
+
+  /* Botón para más flores */
+  button {
+    background: linear-gradient(135deg, #ffd700, #ffb300);
+    border: none;
+    color: #5c4a1a;
+    padding: 15px 35px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    box-shadow: 0 8px 20px rgba(255, 180, 0, 0.5);
+    transition: all 0.3s;
+    margin-top: 15px;
+  }
+
+  button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(255, 180, 0, 0.7);
+  }
+
+  button:active { transform: translateY(0) scale(1); }
+
+  /* Contador de distancia */
+  .distance {
+    margin-top: 25px;
+    font-size: 0.95rem;
+    color: #8b6914;
+    font-style: italic;
+  }
+
+  /* Corazón latiendo */
+  .heart {
+    display: inline-block;
+    color: #d4a017;
+    animation: beat 1.2s ease-in-out infinite;
+  }
+
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.25); }
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 2rem; }
+    .bouquet { font-size: 60px; }
+    .card { padding: 35px 22px; }
+    .message { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="bouquet">🌻🌼🌻</div>
+    <h1>Flores Amarillas para Ti</h1>
+
+    <div class="message">
+      <p>Dicen que las flores amarillas se regalan para demostrar un amor sincero,<br>
+      uno que no se marchita con la distancia.</p>
+
+      <p>Aunque hoy no pueda entregártelas en persona,<br>
+      quiero que cada una de estas flores llegue a tu corazón<br>
+      y te recuerde lo mucho que te amo. <span class="heart">💛</span></p>
+
+      <p>La distancia solo es un número,<br>
+      pero mi amor por ti no tiene medida.</p>
+    </div>
+
+    <p class="from">Con todo mi amor, para la persona más especial ✨</p>
+
+    <button onclick="lluviaDeFlores()">🌸 Presiona para más flores 🌸</button>
+
+    <p class="distance" id="distancia"></p>
+  </div>
+
+<script>
+  // Lluvia continua de pétalos
+  const flores = ['🌼','🌻','💛','🌾','✨'];
+  function crearPetalo() {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = flores[Math.floor(Math.random() * flores.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.fontSize = (16 + Math.random() * 20) + 'px';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.animationDelay = Math.random() * 2 + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 14000);
+  }
+
+  // Genera pétalos constantemente
+  setInterval(crearPetalo, 400);
+
+  // Explosión de flores al presionar el botón
+  function lluviaDeFlores() {
+    for (let i = 0; i < 50; i++) {
+      setTimeout(crearPetalo, i * 30);
+    }
+  }
+
+  // Contador de días juntos (edita la fecha por la de ustedes)
+  const fechaInicio = new Date('2023-01-01'); // 👈 CAMBIA ESTA FECHA
+  const hoy = new Date();
+  const dias = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
+  document.getElementById('distancia').textContent =
+    `Han pasado ${dias} días desde que empezó nuestra historia 💛`;
+</script>
+
+</body>
+</html>
