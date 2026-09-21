@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flores Amarillas para Ti 🌼</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,11 +13,6 @@
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
   }
 
   /* Cielo con resplandor */
@@ -30,6 +26,7 @@
     background: radial-gradient(circle at 50% 30%, rgba(255,255,200,0.8) 0%, transparent 60%);
     animation: glow 6s ease-in-out infinite alternate;
     pointer-events: none;
+    z-index: 0;
   }
 
   @keyframes glow {
@@ -53,6 +50,24 @@
     100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
   }
 
+  /* Pantallas */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .screen.active {
+    display: flex;
+    flex-direction: column;
+  }
+
   /* Contenido */
   .card {
     position: relative;
@@ -67,7 +82,7 @@
     text-align: center;
     box-shadow: 0 20px 60px rgba(200, 150, 0, 0.35);
     border: 2px solid rgba(255, 215, 0, 0.6);
-    animation: appear 1.5s ease-out;
+    animation: appear 1.2s ease-out;
   }
 
   @keyframes appear {
@@ -90,11 +105,18 @@
   }
 
   h1 {
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     color: #b8860b;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9);
     letter-spacing: 1px;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    color: #b8860b;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.9);
   }
 
   .message {
@@ -111,9 +133,53 @@
     color: #8b6914;
     font-size: 1.2rem;
     margin-top: 20px;
+    margin-bottom: 20px;
   }
 
-  /* Botón para más flores */
+  /* Pantalla de código secreto */
+  .clave-input {
+    width: 100%;
+    max-width: 220px;
+    padding: 14px 18px;
+    font-size: 1.6rem;
+    text-align: center;
+    letter-spacing: 6px;
+    border-radius: 50px;
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    background: rgba(255, 255, 255, 0.7);
+    color: #5c4a1a;
+    font-family: inherit;
+    font-weight: bold;
+    outline: none;
+    margin: 10px auto 6px;
+    display: block;
+    box-shadow: inset 0 2px 6px rgba(150, 100, 0, 0.15);
+  }
+
+  .clave-input:focus {
+    border-color: #b8860b;
+    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.3);
+  }
+
+  .clave-input.shake {
+    animation: shake 0.4s;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+
+  .clave-error {
+    color: #b0453a;
+    font-size: 0.9rem;
+    min-height: 20px;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  /* Botones */
   button {
     background: linear-gradient(135deg, #ffd700, #ffb300);
     border: none;
@@ -126,100 +192,1109 @@
     font-weight: bold;
     box-shadow: 0 8px 20px rgba(255, 180, 0, 0.5);
     transition: all 0.3s;
-    margin-top: 15px;
+    margin-top: 10px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  button:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 30px rgba(255, 180, 0, 0.7);
+  @media (hover: hover) and (pointer: fine) {
+    button:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(255, 180, 0, 0.7);
+    }
   }
 
   button:active { transform: translateY(0) scale(1); }
 
-  /* Contador de distancia */
-  .distance {
-    margin-top: 25px;
-    font-size: 0.95rem;
-    color: #8b6914;
-    font-style: italic;
+  button.secondary {
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 6px 16px rgba(200,150,0,0.25);
   }
 
-  /* Corazón latiendo */
-  .heart {
+  .btn-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  /* Menú principal: tarjetas de opciones */
+  .option-cards {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .option-card {
+    background: rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,215,0,0.6);
+    border-radius: 24px;
+    padding: 30px 24px;
+    width: 220px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 10px 25px rgba(200,150,0,0.25);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .option-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 16px 35px rgba(200,150,0,0.4);
+    }
+  }
+
+  .option-card .emoji {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .option-card h3 {
+    color: #b8860b;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+  }
+
+  .option-card p {
+    color: #5c4a1a;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  /* Constructor de ramo */
+  .flower-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .flower-choice {
+    position: relative;
+    background: rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,215,0,0.5);
+    border-radius: 16px;
+    padding: 12px 4px;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: inherit;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .flower-choice:hover {
+      transform: translateY(-4px) scale(1.08);
+      background: rgba(255,255,255,0.85);
+    }
+  }
+
+  .flower-choice.selected {
+    background: linear-gradient(135deg, #ffe680, #ffcc00);
+    border-color: #b8860b;
+    box-shadow: 0 6px 16px rgba(200,150,0,0.4);
+  }
+
+  .flower-choice.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    color: #5c4a1a;
+    font-weight: bold;
+    font-size: 0.85rem;
+  }
+
+  .flower-choice .fe {
+    font-size: clamp(1.6rem, 6vw, 2rem);
+    display: block;
+  }
+
+  .flower-choice .fn {
+    font-size: 0.72rem;
+    color: #5c4a1a;
+    font-weight: bold;
+  }
+
+  .seleccion-info {
+    color: #8b6914;
+    font-size: 0.95rem;
+    font-style: italic;
+    margin-bottom: 15px;
+    min-height: 22px;
+  }
+
+  /* Ramo terminado, en forma de ramo real */
+  .ramo-visual {
+    --vase-h: clamp(72px, 19vw, 94px);
+    position: relative;
+    height: clamp(220px, 50vw, 270px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin: 10px auto 15px;
+  }
+
+  /* Punto de origen compartido: de aquí "nacen" tallos y flores, justo
+     en la boca del florero */
+  .ramo-tallos,
+  .ramo-flores {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--vase-h) - 4px);
+    width: 0;
+    height: 0;
+  }
+
+  .ramo-tallos { z-index: 1; }
+  .ramo-flores { z-index: 4; }
+
+  .tallo {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 7px;
+    margin-left: -3.5px;
+    background: linear-gradient(to top, #3f7d2c, #6fae3f);
+    border-radius: 4px 4px 0 0;
+    transform-origin: 50% 100%;
+  }
+
+  .ramo-flores span {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-size: clamp(1.5rem, 6.5vw, 2.1rem);
+    margin-left: -0.5em;
+    transform-origin: 50% 100%;
+    animation: pop 0.5s ease-out;
+    filter: drop-shadow(0 5px 7px rgba(150, 100, 0, 0.3));
+  }
+
+  @keyframes pop {
+    from { transform: scale(0) rotate(-20deg); opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Florero blanco donde "entran" los tallos */
+  .ramo-florero {
+    width: clamp(84px, 21vw, 108px);
+    height: var(--vase-h);
+    margin: 0 auto;
+    background: linear-gradient(155deg, #ffffff 0%, #faf7ef 55%, #efe8d6 100%);
+    border-radius: 16px 16px 42px 42px;
+    box-shadow: 0 10px 22px rgba(150, 120, 60, 0.3), inset 0 -8px 14px rgba(0,0,0,0.05);
+    border: 1px solid rgba(210, 195, 160, 0.6);
+    position: relative;
+    z-index: 2;
+  }
+
+  .ramo-florero::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 10%;
+    right: 10%;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(180, 160, 120, 0.25);
+  }
+
+  /* Lazo dibujado en CSS (fácil de cambiar a rojo: cambia #ffd700 / #e8b800) */
+  .ramo-lazo {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 42px;
+    height: 22px;
+    transform: translateX(-50%);
+    z-index: 3;
+  }
+
+  .ramo-lazo::before,
+  .ramo-lazo::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25));
+  }
+
+  .ramo-lazo::before {
+    left: 0;
+    border-right: 19px solid #ffd700;
+  }
+
+  .ramo-lazo::after {
+    right: 0;
+    border-left: 19px solid #ffd700;
+  }
+
+  .ramo-lazo .nudo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 15px;
+    background: #e8b800;
+    border: 2px solid #b8860b;
+    border-radius: 3px;
+  }
+
+  .ramo-nombres {
+    color: #8b6914;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  .ramo-frase {
+    font-style: italic;
+    color: #5c4a1a;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    background: rgba(255, 250, 230, 0.6);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+
+  /* Galería de fotos */
+  .photo-frame {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    margin: 10px auto 30px;
+  }
+
+  .photo-frame-inner {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(180, 130, 0, 0.4);
+    border: 4px solid rgba(255,255,255,0.8);
+  }
+
+  .photo-frame-inner img {
+    width: 100%;
+    display: block;
+    max-height: 460px;
+    object-fit: cover;
+  }
+
+  .photo-frame::before,
+  .photo-frame::after {
+    position: absolute;
+    font-size: 1.9rem;
+    z-index: 5;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+    animation: sway 3s ease-in-out infinite;
+  }
+
+  .photo-frame::before {
+    content: "🌼";
+    top: -16px;
+    left: -12px;
+    transform: rotate(-18deg);
+  }
+
+  .photo-frame::after {
+    content: "💛";
+    bottom: -14px;
+    right: -12px;
+    transform: rotate(16deg);
+    animation-delay: 0.6s;
+  }
+
+  .photo-caption {
+    font-style: italic;
+    color: #5c4a1a;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    min-height: 60px;
+  }
+
+  .photo-caption::before {
+    content: "💌 ";
+  }
+
+  /* Carrusel de fotos */
+  .carrusel-section {
+    margin: 15px 0 5px;
+    padding-top: 15px;
+    border-top: 2px dashed rgba(184, 134, 11, 0.35);
+  }
+
+  .carrusel-titulo {
+    font-size: 1.35rem;
+    color: #b8860b;
+    margin-bottom: 4px;
+  }
+
+  .carrusel-sub {
+    font-size: 0.9rem;
+    color: #8b6914;
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  .carrusel-wrap {
+    position: relative;
+  }
+
+  .carrusel-track {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 30px 18px;
+    scrollbar-width: none;
+  }
+
+  .carrusel-track::-webkit-scrollbar { display: none; }
+
+  .carrusel-item {
+    flex: 0 0 74%;
+    max-width: 230px;
+    scroll-snap-align: center;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 10px 24px rgba(180, 130, 0, 0.35);
+    background: #fff;
+  }
+
+  .carrusel-item img {
+    width: 100%;
+    height: clamp(170px, 46vw, 210px);
+    object-fit: cover;
+    display: block;
+  }
+
+  .carrusel-arrow {
+    position: absolute;
+    top: 45%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    color: #8b6914;
+    font-size: 1.3rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(150,100,0,0.35);
+    padding: 0;
+    margin: 0;
+    z-index: 5;
+    touch-action: manipulation;
+  }
+
+  .carrusel-arrow.left { left: -4px; }
+  .carrusel-arrow.right { right: -4px; }
+
+  .carrusel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .carrusel-dots .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(184,134,11,0.3);
+    transition: all 0.25s;
+  }
+
+  .carrusel-dots .dot.active {
+    background: #b8860b;
+    transform: scale(1.4);
+  }
+
+  /* Palabras de amor que caen junto con los pétalos */
+  .petal-word {
+    font-family: 'Brush Script MT', 'Segoe Script', 'Lucida Handwriting', cursive;
+    color: #b8860b;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+  }
+
+  .photo-counter {
+    color: #b8860b;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+  }
+
+  /* Botón volver */
+  .back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255,255,255,0.75);
+    color: #8b6914;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(200,150,0,0.25);
+    margin: 0;
+    z-index: 100;
+  }
+
+  /* Control de música */
+  .music-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.7);
+    color: #8b6914;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    margin: 0;
+  }
+
+  /* Marco del apodo */
+  .nickname-frame {
     display: inline-block;
-    color: #d4a017;
-    animation: beat 1.2s ease-in-out infinite;
+    margin: 0 auto 18px;
+    padding: 8px 30px;
+    border: 2px solid rgba(184, 134, 11, 0.55);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 6px 18px rgba(200, 150, 0, 0.25);
+  }
+
+  .nickname-frame span {
+    font-family: 'Brush Script MT', 'Segoe Script', 'Lucida Handwriting', cursive;
+    font-size: 2rem;
+    color: #b8860b;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Pantalla final */
+  .final-heart {
+    font-size: 5rem;
+    animation: beat 1.1s ease-in-out infinite;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 10px 25px rgba(255, 150, 0, 0.6));
   }
 
   @keyframes beat {
     0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.25); }
+    50%      { transform: scale(1.2); }
+  }
+
+  .te-amo {
+    font-size: 3.2rem;
+    color: #b8860b;
+    text-shadow: 3px 3px 8px rgba(255,255,255,0.9);
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin: 20px 0;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 1.2s ease-out;
+  }
+
+  .te-amo.show {
+    opacity: 1;
+    transform: scale(1);
   }
 
   @media (max-width: 600px) {
-    h1 { font-size: 2rem; }
+    h1 { font-size: 1.9rem; }
+    h2 { font-size: 1.4rem; }
     .bouquet { font-size: 60px; }
-    .card { padding: 35px 22px; }
+    .card { padding: 35px 20px; }
     .message { font-size: 1rem; }
+    .option-cards { gap: 16px; }
+    .option-card { width: 100%; max-width: 260px; }
+    .flower-grid { grid-template-columns: repeat(3, 1fr); }
+    .te-amo { font-size: 2.1rem; }
+  }
+
+  /* Ajustes finos para pantallas de celular angostas (Redmi, Honor, etc.) */
+  @media (max-width: 400px) {
+    .screen { padding: 24px 12px; }
+    .card { padding: 28px 16px; border-radius: 22px; }
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.25rem; }
+    .nickname-frame span { font-size: 1.6rem; }
+    .flower-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .flower-choice { padding: 10px 2px; }
+    button { padding: 13px 24px; font-size: 1rem; }
+    .btn-row { gap: 10px; }
+    .photo-frame-inner img { max-height: 320px; }
+    .photo-frame::before, .photo-frame::after { font-size: 1.4rem; }
+    .carrusel-item { flex-basis: 80%; }
+    .carrusel-arrow { width: 32px; height: 32px; font-size: 1.1rem; }
+    .ramo-frase { font-size: 1rem; padding: 14px; }
   }
 </style>
 </head>
 <body>
 
-  <div class="card">
-    <div class="bouquet">🌻🌼🌻</div>
-    <h1>Flores Amarillas para Ti</h1>
+  <audio id="bgMusic" loop preload="auto">
+    <source src="Audio/Coldplay - Yellow (Official Video).mp3" type="audio/mpeg">
+  </audio>
 
-    <div class="message">
-      <p>Dicen que las flores amarillas se regalan para demostrar un amor sincero,<br>
-      uno que no se marchita con la distancia.</p>
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🔊</button>
 
-      <p>Aunque hoy no pueda entregártelas en persona,<br>
-      quiero que cada una de estas flores llegue a tu corazón<br>
-      y te recuerde lo mucho que te amo. <span class="heart">💛</span></p>
+  <!-- Pantalla 0: Código secreto -->
+  <section class="screen active" id="screen-lock">
+    <div class="card">
+      <div class="bouquet" style="font-size: 56px;">🔐🌼</div>
+      <h1 style="font-size: 1.9rem;">Nuestro código secreto</h1>
+      <div class="message">
+        <p>Antes de entrar, dime...</p>
+        <p>¿Cuál es el código que llevamos grabado en el
+        corazón? <span>💛</span></p>
+      </div>
 
-      <p>La distancia solo es un número,<br>
-      pero mi amor por ti no tiene medida.</p>
+      <input
+        type="text"
+        maxlength="6"
+        id="claveInput"
+        class="clave-input"
+        placeholder="••••••"
+        aria-label="Código secreto"
+        autocomplete="off"
+      >
+      <p class="clave-error" id="claveError">&nbsp;</p>
+
+      <button onclick="verificarClave()">Entrar 💛</button>
     </div>
+  </section>
 
-    <p class="from">Con todo mi amor, para la persona más especial ✨</p>
+  <!-- Pantalla 1: Bienvenida -->
+  <section class="screen" id="screen-intro">
+    <div class="card">
+      <div class="bouquet">🌻🌼🌻</div>
+      <div class="nickname-frame"><span>🌼 Cachetitos 🌼</span></div>
+      <h1>Flores Amarillas para Ti</h1>
+      <div class="message">
+        <p>Si el sol pudiera elegir una forma para llegar hasta ti,
+        estoy seguro de que elegiría ser una flor amarilla.</p>
+        <p>Porque así como ellas siempre buscan la luz,
+        yo siempre te busco a ti, sin importar la distancia. <span>💛</span></p>
+      </div>
+      <button onclick="irA('screen-menu', true)">🌼 Descubre más 🌼</button>
+    </div>
+  </section>
 
-    <button onclick="lluviaDeFlores()">🌸 Presiona para más flores 🌸</button>
+  <!-- Pantalla 2: Menú -->
+  <section class="screen" id="screen-menu">
+    <div class="card">
+      <div class="bouquet" style="font-size:50px;">🌷🌻🌼</div>
+      <h2>¿Qué quieres hacer primero?</h2>
+      <p class="message" style="margin-bottom:10px;">Elige un camino, mi amor.</p>
+      <div class="option-cards">
+        <div class="option-card" role="button" tabindex="0" onclick="irA('screen-builder')" onkeypress="if(event.key==='Enter'||event.key===' ')irA('screen-builder')">
+          <span class="emoji">🌷</span>
+          <h3>Haz tu propia flor</h3>
+          <p>Elige tus flores favoritas y arma tu propio ramo</p>
+        </div>
+        <div class="option-card" role="button" tabindex="0" onclick="irA('screen-gallery')" onkeypress="if(event.key==='Enter'||event.key===' ')irA('screen-gallery')">
+          <span class="emoji">📷</span>
+          <h3>Mira lo nuestro</h3>
+          <p>Revive con fotos cada momento juntos</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <p class="distance" id="distancia"></p>
-  </div>
+  <!-- Pantalla 3: Arma tu ramo -->
+  <section class="screen" id="screen-builder">
+    <button class="back-btn" onclick="irA('screen-menu')">← Volver</button>
+    <div class="card">
+
+      <div id="builderSelect">
+        <h2>Arma tu ramo 🌷</h2>
+        <p class="message" style="margin-bottom:6px;">Toca las flores que quieras combinar</p>
+        <p class="seleccion-info" id="seleccionInfo">Ninguna flor seleccionada aún</p>
+
+        <div class="flower-grid" id="flowerGrid"></div>
+
+        <div class="btn-row">
+          <button onclick="terminarRamo()">Terminar 💐</button>
+        </div>
+      </div>
+
+      <div id="builderResult" style="display:none;">
+        <h2>¡Tu ramo está listo! 💐</h2>
+        <p class="ramo-nombres" id="ramoNombres"></p>
+
+        <div class="ramo-visual">
+          <div class="ramo-tallos" id="ramoTallos"></div>
+          <div class="ramo-flores" id="ramoFlores"></div>
+          <div class="ramo-florero">
+            <div class="ramo-lazo"><span class="nudo"></span></div>
+          </div>
+        </div>
+
+        <p class="ramo-frase" id="ramoFrase"></p>
+
+        <div class="btn-row">
+          <button class="secondary" onclick="reiniciarRamo()">🔄 Crear otro ramo</button>
+          <button onclick="irA('screen-gallery')">Ver lo nuestro 📷</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pantalla 4: Galería de fotos -->
+  <section class="screen" id="screen-gallery">
+    <button class="back-btn" onclick="irA('screen-menu')">← Volver</button>
+    <div class="card" id="galleryCard">
+      <h2 id="galleryTitle">Mira lo nuestro 📷</h2>
+
+      <div id="galleryPhotoView">
+        <p class="photo-counter" id="photoCounter">Foto 1 de 9</p>
+        <div class="photo-frame">
+          <div class="photo-frame-inner">
+            <img id="photoImg" src="" alt="Nuestro recuerdo">
+          </div>
+        </div>
+        <p class="photo-caption" id="photoCaption"></p>
+        <button onclick="siguienteFoto()" id="nextPhotoBtn">Siguiente 💛</button>
+      </div>
+
+      <div id="galleryEndView" style="display:none;">
+        <div class="bouquet" style="font-size:60px;">🌼💛🌼</div>
+        <p class="message">
+          Cada una de estas fotos es solo una pequeña muestra de lo mucho que
+          significas para mí. Cada momento juntos ha sido como una flor que
+          nunca se marchita, y todavía queda tanto amor por vivir juntos.
+        </p>
+
+        <div class="carrusel-section">
+          <h2 class="carrusel-titulo">🌸 Nuestros momentos 🌸</h2>
+          <p class="carrusel-sub">Desliza para ver más 👉</p>
+          <div class="carrusel-wrap">
+            <button class="carrusel-arrow left" onclick="moverCarrusel(-1)" aria-label="Foto anterior">‹</button>
+            <div class="carrusel-track" id="carruselTrack"></div>
+            <button class="carrusel-arrow right" onclick="moverCarrusel(1)" aria-label="Foto siguiente">›</button>
+          </div>
+          <div class="carrusel-dots" id="carruselDots"></div>
+        </div>
+
+        <button onclick="lluviaFinal()">🌸 Lluvia de flores 🌸</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla 5: Final -->
+  <section class="screen" id="screen-final">
+    <div class="card">
+      <div class="final-heart">💛</div>
+      <h1 class="te-amo" id="teAmoTexto">TE AMO CON TODO<br>MI CORAZÓN</h1>
+      <p class="from">Gracias por ser mi flor amarilla favorita ✨</p>
+      <button class="secondary" onclick="irA('screen-intro')">Volver al inicio</button>
+    </div>
+  </section>
 
 <script>
-  // Lluvia continua de pétalos
+  /* ---------- Pétalos de fondo (siempre activos) ---------- */
   const flores = ['🌼','🌻','💛','🌾','✨'];
-  function crearPetalo() {
+  const palabrasAmor = ['Te amo', '💌', 'Mi amor', '💛', 'Eres todo'];
+  let pantallaActiva = 'screen-lock';
+
+  function crearPetalo(forzarPalabra) {
     const p = document.createElement('div');
     p.className = 'petal';
-    p.textContent = flores[Math.floor(Math.random() * flores.length)];
+
+    const enGaleriaOFinal = pantallaActiva === 'screen-gallery' || pantallaActiva === 'screen-final';
+    const usarPalabra = forzarPalabra || (enGaleriaOFinal && Math.random() < 0.22);
+
+    if (usarPalabra) {
+      p.textContent = palabrasAmor[Math.floor(Math.random() * palabrasAmor.length)];
+      p.classList.add('petal-word');
+      p.style.fontSize = (15 + Math.random() * 10) + 'px';
+    } else {
+      p.textContent = flores[Math.floor(Math.random() * flores.length)];
+      p.style.fontSize = (16 + Math.random() * 20) + 'px';
+    }
+
     p.style.left = Math.random() * 100 + 'vw';
-    p.style.fontSize = (16 + Math.random() * 20) + 'px';
     p.style.animationDuration = (6 + Math.random() * 6) + 's';
     p.style.animationDelay = Math.random() * 2 + 's';
     document.body.appendChild(p);
     setTimeout(() => p.remove(), 14000);
   }
 
-  // Genera pétalos constantemente
-  setInterval(crearPetalo, 400);
+  setInterval(() => {
+    crearPetalo();
+    if (pantallaActiva === 'screen-gallery' || pantallaActiva === 'screen-final') {
+      crearPetalo();
+    }
+  }, 500);
 
-  // Explosión de flores al presionar el botón
-  function lluviaDeFlores() {
-    for (let i = 0; i < 50; i++) {
-      setTimeout(crearPetalo, i * 30);
+  function lluviaDeFlores(cantidad) {
+    for (let i = 0; i < cantidad; i++) {
+      setTimeout(() => crearPetalo(i % 5 === 0), i * 25);
     }
   }
 
-  // Contador de días juntos (edita la fecha por la de ustedes)
-  const fechaInicio = new Date('2023-01-01'); // 👈 CAMBIA ESTA FECHA
-  const hoy = new Date();
-  const dias = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
-  document.getElementById('distancia').textContent =
-    `Han pasado ${dias} días desde que empezó nuestra historia 💛`;
+  /* ---------- Navegación entre pantallas ---------- */
+  function irA(id, primeraVez) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+    pantallaActiva = id;
+
+    if (primeraVez) iniciarMusica();
+
+    if (id === 'screen-gallery') {
+      resetGaleria();
+      lluviaDeFlores(20);
+    }
+  }
+
+  /* ---------- Música ---------- */
+  const audio = document.getElementById('bgMusic');
+  const musicBtn = document.getElementById('musicBtn');
+  let musicaIniciada = false;
+
+  function iniciarMusica() {
+    if (musicaIniciada) return;
+    musicaIniciada = true;
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+  }
+
+  function toggleMusic() {
+    if (!musicaIniciada) { iniciarMusica(); musicBtn.textContent = '🔊'; return; }
+    if (audio.paused) {
+      audio.play().catch(() => {});
+      musicBtn.textContent = '🔊';
+    } else {
+      audio.pause();
+      musicBtn.textContent = '🔇';
+    }
+  }
+
+  /* ---------- Arma tu ramo ---------- */
+  const tiposDeFlor = [
+    { nombre: 'Girasol', emoji: '🌻', frases: [
+        'El girasol siempre gira buscando la luz, así como yo siempre te busco a ti.',
+        'Como el girasol, mi cariño por ti nunca deja de mirar hacia adelante.'
+      ] },
+    { nombre: 'Margarita', emoji: '🌼', frases: [
+        'La margarita representa la inocencia y la alegría simple de estar contigo.',
+        'Contigo hasta lo más sencillo, como una margarita, se vuelve especial.'
+      ] },
+    { nombre: 'Tulipán', emoji: '🌷', frases: [
+        'El tulipán simboliza el amor perfecto y una declaración sincera.',
+        'Como un tulipán, mi amor por ti es simple, honesto y verdadero.'
+      ] },
+    { nombre: 'Rosa', emoji: '🌹', frases: [
+        'La rosa representa un amor profundo y apasionado, como el que siento por ti.',
+        'Cada pétalo de esta rosa guarda una razón distinta por la que te amo.'
+      ] },
+    { nombre: 'Cerezo', emoji: '🌸', frases: [
+        'La flor de cerezo simboliza la belleza de los momentos que, aunque cortos, se quedan para siempre.',
+        'Como la flor de cerezo, cada instante contigo es hermoso y único.'
+      ] },
+    { nombre: 'Silvestre', emoji: '💐', frases: [
+        'Las flores silvestres representan un amor libre, espontáneo y verdadero.',
+        'Así como estas flores crecen sin esfuerzo, contigo todo fluye de manera natural.'
+      ] },
+    { nombre: 'Roseta', emoji: '🏵️', frases: [
+        'La roseta simboliza aprecio y gratitud, justo lo que siento por tenerte en mi vida.',
+        'Gracias por ser esa persona que siempre agradezco tener a mi lado.'
+      ] },
+    { nombre: 'Loto', emoji: '🪷', frases: [
+        'El loto representa el renacer y la pureza, como el amor que crece cada día más fuerte.',
+        'Contigo cada día siento que renazco un poco más enamorado.'
+      ] }
+  ];
+
+  const flowerGrid = document.getElementById('flowerGrid');
+  const seleccionInfo = document.getElementById('seleccionInfo');
+  let seleccionados = [];
+
+  tiposDeFlor.forEach((flor, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'flower-choice';
+    btn.dataset.index = i;
+    btn.innerHTML = `<span class="fe">${flor.emoji}</span><span class="fn">${flor.nombre}</span>`;
+    btn.onclick = () => toggleFlor(i, btn);
+    flowerGrid.appendChild(btn);
+  });
+
+  function toggleFlor(i, btn) {
+    const idx = seleccionados.indexOf(i);
+    if (idx === -1) {
+      seleccionados.push(i);
+      btn.classList.add('selected');
+    } else {
+      seleccionados.splice(idx, 1);
+      btn.classList.remove('selected');
+    }
+    seleccionInfo.textContent = seleccionados.length === 0
+      ? 'Ninguna flor seleccionada aún'
+      : `Flores seleccionadas: ${seleccionados.map(i => tiposDeFlor[i].nombre).join(', ')}`;
+  }
+
+  function terminarRamo() {
+    if (seleccionados.length === 0) {
+      seleccionInfo.textContent = 'Elige al menos una flor para armar tu ramo 🌼';
+      return;
+    }
+
+    const elegidas = seleccionados.map(i => tiposDeFlor[i]);
+
+    document.getElementById('ramoNombres').textContent =
+      'Tu ramo de: ' + elegidas.map(f => f.nombre).join(', ');
+
+    const ramoFlores = document.getElementById('ramoFlores');
+    const ramoTallos = document.getElementById('ramoTallos');
+    ramoFlores.innerHTML = '';
+    ramoTallos.innerHTML = '';
+    const n = elegidas.length;
+
+    const desenfoqueTabla = [0, 0.6, 1.4];
+    const opacidadTabla = [1, 0.85, 0.65];
+
+    function crearFlorYTallo(flor, angulo, alto, profundidad, escala) {
+      const desenfoque = desenfoqueTabla[profundidad];
+      const opacidad = opacidadTabla[profundidad];
+      const zBase = 30 - Math.round(Math.abs(angulo) / 6) - profundidad * 8;
+
+      const tallo = document.createElement('div');
+      tallo.className = 'tallo';
+      tallo.style.height = alto + 'px';
+      tallo.style.transform = `rotate(${angulo}deg)`;
+      tallo.style.zIndex = String(zBase);
+      if (desenfoque) {
+        tallo.style.filter = `blur(${desenfoque}px)`;
+        tallo.style.opacity = String(opacidad);
+      }
+      ramoTallos.appendChild(tallo);
+
+      const giroExtra = Math.random() * 16 - 8;
+      const span = document.createElement('span');
+      span.textContent = flor.emoji;
+      span.style.zIndex = String(zBase + 1);
+      span.style.transform =
+        `rotate(${angulo}deg) translateY(-${alto}px) rotate(${-angulo * 0.3 + giroExtra}deg) scale(${escala})`;
+      if (desenfoque) {
+        span.style.filter = `drop-shadow(0 5px 7px rgba(150,100,0,0.3)) blur(${(desenfoque * 0.35).toFixed(2)}px)`;
+        span.style.opacity = String(Math.min(1, opacidad + 0.15));
+      }
+      ramoFlores.appendChild(span);
+    }
+
+    // Posiciones fijas y simétricas que forman SIEMPRE un ramo completo:
+    // si se elige 1 flor, ella sola llena todo el ramo; si se eligen más,
+    // se reparten por anillos simétricos (izquierda/derecha iguales)
+    // para completar el mismo ramo entre todas.
+    const posiciones = [
+      { angulo: 0, alto: 102 },
+      { angulo: -16, alto: 95 }, { angulo: 16, alto: 95 },
+      { angulo: -33, alto: 86 }, { angulo: 33, alto: 86 },
+      { angulo: -50, alto: 74 }, { angulo: 50, alto: 74 },
+      { angulo: -66, alto: 59 }, { angulo: 66, alto: 59 }
+    ];
+
+    posiciones.forEach((pos, idx) => {
+      const banda = idx === 0 ? 0 : Math.ceil(idx / 2);
+      const flor = elegidas[banda % n];
+
+      // Flor principal, exacta en su lugar simétrico
+      crearFlorYTallo(flor, pos.angulo, pos.alto, 0, 1);
+
+      // Flor extra pegada a ella, para dar volumen real sin romper la simetría
+      const anguloRelleno = pos.angulo + (Math.random() * 16 - 8);
+      const altoRelleno = pos.alto + (Math.random() * 14 - 6);
+      const profundidadRelleno = 1 + Math.floor(Math.random() * 2);
+      crearFlorYTallo(flor, anguloRelleno, altoRelleno, profundidadRelleno, 0.85);
+    });
+
+    const pool = elegidas.flatMap(f => f.frases);
+    document.getElementById('ramoFrase').textContent =
+      pool[Math.floor(Math.random() * pool.length)];
+
+    document.getElementById('builderSelect').style.display = 'none';
+    document.getElementById('builderResult').style.display = 'block';
+  }
+
+  function reiniciarRamo() {
+    seleccionados = [];
+    flowerGrid.querySelectorAll('.flower-choice').forEach(b => b.classList.remove('selected'));
+    seleccionInfo.textContent = 'Ninguna flor seleccionada aún';
+    document.getElementById('builderResult').style.display = 'none';
+    document.getElementById('builderSelect').style.display = 'block';
+  }
+
+  /* ---------- Galería de fotos ---------- */
+  const fotos = [
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.57.jpeg", frase: "Cada foto contigo es un pedazo de sol que guardo en mi corazón." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.58.jpeg", frase: "Tu sonrisa ilumina más que cualquier girasol." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.58 (1).jpeg", frase: "En cada momento a tu lado, el tiempo se vuelve dorado." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.58 (2).jpeg", frase: "Contigo hasta lo más simple se convierte en un recuerdo hermoso." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.59.jpeg", frase: "Eres la razón por la que mis días se sienten como primavera." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.59 (1).jpeg", frase: "Cada instante juntos es una flor que jamás se marchita." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.56.59 (2).jpeg", frase: "Tu risa es la melodía que más amo escuchar." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.57.39.jpeg", frase: "Quiero seguir llenando de recuerdos amarillos cada página de nuestra historia." },
+    { src: "Images/WhatsApp Image 2026-09-21 at 12.58.12.jpeg", frase: "Y así, entre risas y abrazos, fuiste sembrando amor en mí." }
+  ];
+
+  let fotoActual = 0;
+
+  function resetGaleria() {
+    fotoActual = 0;
+    document.getElementById('galleryPhotoView').style.display = 'block';
+    document.getElementById('galleryEndView').style.display = 'none';
+    mostrarFoto();
+  }
+
+  function mostrarFoto() {
+    const foto = fotos[fotoActual];
+    document.getElementById('photoImg').src = foto.src;
+    document.getElementById('photoCaption').textContent = foto.frase;
+    document.getElementById('photoCounter').textContent = `Foto ${fotoActual + 1} de ${fotos.length}`;
+    document.getElementById('nextPhotoBtn').textContent =
+      fotoActual === fotos.length - 1 ? 'Ver mensaje final 💛' : 'Siguiente 💛';
+  }
+
+  function siguienteFoto() {
+    fotoActual++;
+    if (fotoActual < fotos.length) {
+      mostrarFoto();
+    } else {
+      document.getElementById('galleryPhotoView').style.display = 'none';
+      document.getElementById('galleryEndView').style.display = 'block';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---------- Carrusel de fotos ---------- */
+  const carruselFotos = [
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.41.jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.42 (1).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.42 (2).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.42 (3).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.42.jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.43 (1).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.43 (2).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.43.jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.44 (1).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.44 (2).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.44 (3).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.44 (4).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.44.jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.45 (1).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.45 (2).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.45 (3).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.45.jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.46 (1).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.46 (2).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.46 (3).jpeg",
+    "Images/Carrusel/WhatsApp Image 2026-09-21 at 13.50.46.jpeg"
+  ];
+
+  const carruselTrack = document.getElementById('carruselTrack');
+  const carruselDots = document.getElementById('carruselDots');
+  const dots = [];
+
+  carruselFotos.forEach((src, i) => {
+    const item = document.createElement('div');
+    item.className = 'carrusel-item';
+    item.dataset.index = i;
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'Nuestro momento ' + (i + 1);
+    img.loading = 'lazy';
+    item.appendChild(img);
+    carruselTrack.appendChild(item);
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    carruselDots.appendChild(dot);
+    dots.push(dot);
+  });
+  dots[0].classList.add('active');
+
+  const carruselObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const i = Number(entry.target.dataset.index);
+        dots.forEach(d => d.classList.remove('active'));
+        dots[i].classList.add('active');
+      }
+    });
+  }, { root: carruselTrack, threshold: 0.6 });
+
+  carruselTrack.querySelectorAll('.carrusel-item').forEach(item => carruselObserver.observe(item));
+
+  function moverCarrusel(direccion) {
+    const item = carruselTrack.querySelector('.carrusel-item');
+    if (!item) return;
+    const paso = item.getBoundingClientRect().width + 14;
+    carruselTrack.scrollBy({ left: direccion * paso, behavior: 'smooth' });
+  }
+
+  /* ---------- Lluvia final + Te amo ---------- */
+  function lluviaFinal() {
+    irA('screen-final');
+    lluviaDeFlores(120);
+    const intervalo = setInterval(() => lluviaDeFlores(30), 700);
+    setTimeout(() => clearInterval(intervalo), 6000);
+
+    const texto = document.getElementById('teAmoTexto');
+    texto.classList.remove('show');
+    setTimeout(() => texto.classList.add('show'), 800);
+  }
+
+  /* ---------- Código secreto ---------- */
+  const CODIGO_SECRETO = '130823';
+  const claveInput = document.getElementById('claveInput');
+  const claveError = document.getElementById('claveError');
+
+  function verificarClave() {
+    const valor = claveInput.value.replace(/\D/g, '');
+
+    if (valor === CODIGO_SECRETO) {
+      claveError.innerHTML = '&nbsp;';
+      irA('screen-intro');
+      return;
+    }
+
+    claveError.textContent = 'Mmm, ese no es nuestro código... inténtalo otra vez 💭';
+    claveInput.classList.remove('shake');
+    requestAnimationFrame(() => claveInput.classList.add('shake'));
+    claveInput.value = '';
+    claveInput.focus();
+  }
+
+  claveInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') verificarClave();
+  });
 </script>
 
 </body>
